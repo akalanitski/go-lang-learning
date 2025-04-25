@@ -1,4 +1,4 @@
-package ex62
+package ex62_func_interface_test
 
 import "testing"
 
