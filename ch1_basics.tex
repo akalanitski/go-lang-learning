@@ -1,0 +1,507 @@
+%! Author = akalanitski
+%! Date = 22.04.25
+
+\documentclass[12pt]{article}
+\usepackage[a4paper,left=2cm, right=1cm, top=1cm, bottom=2cm]{geometry}         % For setting margins
+
+% Optional packages
+ \usepackage[utf8]{inputenc}   % Encoding
+\usepackage[T1]{fontenc}      % Better fonts
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[framemethod=default]{mdframed}
+\usepackage[scaled]{beramono}
+
+% Make hyperlinks inside of document and clickable TOC
+\usepackage[hidelinks]{hyperref}
+
+% COLUMNS LAYOUT for notes
+\usepackage{paracol}
+\columnratio{0.7}
+\setlength{\columnseprule}{0.4pt} % Line between columns
+\setlength{\columnsep}{1em}       % Space between columns
+
+\newmdenv[
+    linecolor=gray,
+    linewidth=1pt,
+    roundcorner=5pt,
+    backgroundcolor=gray!10,
+    innertopmargin=1em,
+    innerbottommargin=1em,
+    innerleftmargin=1em,
+    innerrightmargin=1em
+]{Note}
+
+
+% Go language definition for listings
+\lstdefinelanguage{Go}{
+    morekeywords={
+        break, case, chan, const, continue, default, defer, else, fallthrough,
+        for, func, go, goto, if, import, interface, map, package, range,
+        return, select, struct, switch, type, var, nil, true, false, make,
+        new, append, cap, copy, delete, len, close, complex, real, imag
+    },
+    sensitive=true,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+    morestring=[b]`,
+}
+
+% Style configuration
+\lstset{
+    language=Go,
+    numbers=left,                % Line numbers on the left
+    numberstyle=\tiny\color{gray},
+    numbersep=14pt,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    breaklines=true,
+    tabsize=1,
+}
+
+\begin{document}
+
+% First page with formal info and document structure.
+% Title page
+\title{Go Lang Notes}
+\author{Aliaksei Kalanitski}
+\date{\today}
+\maketitle
+
+My notes during basic couse of GO Lang couse. Cover only very basic topics like
+Function, Variables, Intput, Output, Keywords
+
+% Table of contents
+\tableofcontents
+\newpage
+
+
+\section{Syntax}
+
+\subsection{Keywords}
+\begin{paracol}{2} \begin{leftcolumn}
+\begin{tabular}{lllll}
+break       & default       & func      & interface & \textbf{select} \\
+case        & \textbf{defer} & \textbf{go} & \textbf{map} & struct \\
+\textbf{chan} & else & \textbf{goto}    & package   & switch \\
+const         & \textbf{fallthrough}    & if        & \textbf{range} & \textbf{type} \\
+continue      & for         & import    & return    & var \\
+\end{tabular}
+\end{leftcolumn} \begin{rightcolumn}
+According to \href{https://go.dev/ref/spec}{Go spec} it only 25 keywords to
+write programs. I think it is not true. Standart data types are also reserved
+and as well as some values (i.e., true, false, nil, NaN)
+\end{rightcolumn}
+\end{paracol}
+
+\subsection{Identifiers}
+\begin{tabular}{ll}
+Blank identifier& \_ \\
+Standart types  & any, comparable, error, uintptr and basic types \\
+Constants       & true, false, iota \\
+Values          & nil, NaN? \\
+Functions       & append, cap, close, complex, copy, \\
+                & delete, imag, len, make, new, panic, \\
+                & print, real, recover
+
+\end{tabular}
+\subsection{Operators}
+\begin{paracol}{2}
+\begin{leftcolumn}
+\begin{tabular}{lll}
+math        & + -       & P2 binary plus and minus \\
+            & * /       & P1 binary multiply, divide \\
+            & \%        & P1 binary reminder \\
+bitwise     & \& \&\^{} & P1 Binary "and", "not and" \\
+            & | \^{}    & P2 Binary "or", "xor" \\
+            & >> <<     & P1 Binary shift left, right \\
+equty       & > >=      & P3 Binary great, great or equal \\
+            & < <=      & P3 Binary less, less or equal \\
+            & == !=     & P3 Binary Equal, Not equal \\
+logical     & \&\&      & P4 Binary logical "and" \\
+            & ||        & P5 Binary logical "or" \\
+assign      & = :=      & P6 Assign and assigne and init \\
+unary       & ++ --     & unary increment and decrement \\
+            & -         & unary negative \\
+            & \^{}      & unary bitwise complement \\
+Pointer     & \& *      & unary get reference, dereference\\
+priority    & ( )       & define the priorities in expression \\
+scope       & \{ \}     & define the scope of variables and \\
+punctuation & , ;       & \\
+channels    & <-        & \\
+slice       & \ldots    & extend the slice values \\
+accessors   & .         & access of the property of structure \\
+            & [ ]       & access of array,slice or map element \\
+other       & : ~       &  \\
+\end{tabular}
+
+\end{leftcolumn} \begin{rightcolumn}
+\begin{enumerate}
+    \item\textbf{plus}, \textbf{minus} and \textbf{multiply} operations return
+        result of the same type as an operands.
+    \item \textbf{devide} operator return float type.
+    \item \textbf{less}, \textbf{great}, \textbf{equal}, \textbf{not eaqual}
+        operations return resul of boolean type.
+    \item Golang doesn't have a ternary operator which available in many languages
+        including
+\end{enumerate}
+\end{rightcolumn}
+\end{paracol}
+
+\subsection{File structure}
+\begin{paracol}{2}
+\begin{leftcolumn}
+\begin{lstlisting}
+package main
+
+import "fmt"
+
+// "main" function is a reserved as an entry poin into
+/// the app and must be in "main" pacakge
+func main() {
+    fmt.Println("Hello world!")
+}
+\end{lstlisting}
+\end{leftcolumn} \begin{rightcolumn}
+Go file have a \textbf{package} name and could have \textbf{function},
+\textbf{types}, \textbf{variales} or \textbf{constants} declaration.
+\end{rightcolumn}
+\end{paracol}
+
+\newpage
+\section{Data types and structures}
+GO is a stricly typed programming language.
+\subsection{Basic types}
+\begin{paracol}{2}
+\begin{leftcolumn}
+\begin{tabular}{llll}
+\hline
+Kind        & Default Value & Size    & Types       \\
+\hline
+Logical     & \tt{false}& \tt{1b}      & int8, uint8, byte, bool \\
+Integers    & \tt{0}    & \tt{2b}      & int16, uint16 \\
+            & \tt{0}    & \tt{4b}      & int32, uint32, rune\\
+            & \tt{0}    & \tt{8b}      & int64, uint64\\
+Numbers     & \tt{0}    & \tt{4b}      & float32 \\
+            & \tt{0}    & \tt{8b}      & float64,  \\
+            & \tt{0}    & \tt{8b}      & complex64  \\
+            & \tt{0}    & \tt{16b}     & complex128 \\
+Integers    & \tt{0}    & \tt{4b/8b}   & int, uint \\
+Pointer     & \tt{nil}  & \tt{4b/8b}   & *int, *string, etc. \\
+String      & \tt{""}   & \tt{16b+}    & string \\
+\hline
+\end{tabular}
+\end{leftcolumn}
+\begin{rightcolumn}
+1. Type casing by using T(value) \\
+2. GO don't have a String interpolation feature. Use \tt{Printf} and \\
+\tt{Sprintf} function from the standard library. \\
+3. The standartd library have flexible abilities to print value of any type with \\
+\%v paramter.
+\end{rightcolumn}
+\end{paracol}
+
+\subsection{Arrays}
+Array is a fixed side set of values of the same type.
+var a [10]int
+\begin{lstlisting}
+var a [2]string
+a[0] = "Hello"
+a[1] = "World"
+fmt.Println(a[0], a[1])
+fmt.Println(a)
+
+primes := [6]int{2, 3, 5, 7, 11, 13}
+fmt.Println(primes)
+\end{lstlisting}
+
+
+\subsection{Slices}
+Slices has a dynamic size and don't store the own value. Only represent the value of underlying array.
+\begin{lstlisting}
+primes := [6]int{2, 3, 5, 7, 11, 13}
+
+var s []int = primes[1:4]
+fmt.Println(s)
+\end{lstlisting}
+
+len(s)  -- print length
+cap(s) -- print capacity
+make([]int, 5)
+append(s []T, vs ...T) []T
+
+default value of slice is "nil"
+
+\b{Range} -- operator used to extract content of slice to individual values.
+\begin{lstlisting}
+var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+for i, v := range pow {
+    fmt.Printf("2**%d = %d\n", i, v)
+}
+\end{lstlisting}
+
+\subsection[maps]{Maps}
+KAY-VALUE data structure with any type of key and any type of value.
+\begin{lstlisting}
+var myMap = map[KT]VT{
+    key: value
+}
+... or ...
+var myMap = make()
+\end{lstlisting}
+
+delete
+
+ok? statement.
+
+\subsection{Structures}
+
+\begin{lstlisting}
+type Vertex struct {
+    X int
+    Y int
+}
+...
+v := Vertex{1, 2}
+\end{lstlisting}
+
+\begin{Note} \textbf{Advanced note}
+inner field promotion allow to use structures composition as an iheritance.
+\end{Note}
+
+Anonymous struct = inline struct
+
+\newpage
+\section {Code flow}
+
+\subsection{Condition}
+\begin{lstlisting}
+if init; condition {
+    ...
+}
+\end{lstlisting}
+
+if ... else
+
+\begin{lstlisting}
+if init; condition {
+    ...
+} else {
+    ...
+}
+\end{lstlisting}
+
+Multiple select
+\begin{lstlisting}
+switch init; variable {
+    case val1:
+        ...
+    case val2:
+        ...
+    default:
+        ...
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+switch {
+    case condition1:
+        ...
+    case condition2:
+        ...
+    default:
+        ...
+}
+\end{lstlisting}
+
+
+
+\subsection{Loop}
+Go has only one loop which has init section, condition section
+and incremental section. But only condition section is required
+\begin{lstlisting}
+for init; condition; increment{
+    ...
+}
+\end{lstlisting}
+
+Sample without init statement.
+\begin{lstlisting}
+for sum < 1000 {
+    sum += sum
+}
+\end{lstlisting}
+
+Or forever loop:
+\begin{lstlisting}
+for {
+    ...
+}
+\end{lstlisting}
+
+range
+\begin{lstlisting}
+for key, value := range oldMap {
+    newMap[key] = value
+}
+... or ...
+for _, value := range oldMap {
+    fmt.Println(value)
+}
+\end{lstlisting}
+
+\textbf{Note, Advanced Topic}
+
+GO don't have build-in control flow structure to iterate structure fileds. Use
+`reflect` package for this.
+
+\newpage
+\section{Functions}
+
+Declaration
+\begin{lstlisting}
+func (receiver) name (args) returnType {
+...
+}
+\end{lstlisting}
+
+\textbf{defer} build the function execution stack
+\begin{lstlisting}
+func (args) type {
+    defer fmt.Println("world")
+    fmt.Println("hello")
+}
+\end{lstlisting}
+
+Features
+
+Multiple returns
+Variadic parameters (Changed list of parameters)
+\begin{lstlisting}
+func Greet(names ...string) {
+    name := "Guest"
+    if len(names) > 0 {
+        name = names[0]
+    }
+    fmt.Println("Hello", name)
+}
+\end{lstlisting}
+Defer
+
+\textbf{Receiver} is an ability to move function in scope of some structure. This is
+a way to simulate Object-Oriented approach
+
+(!) Note, Advanced Topic (!)
+No `default values` for functions parameters
+
+
+\newpage
+\section{Pointers}
+\textbf{Pointer} is a variable which save the reference to other variable.
+
+\begin{paracol}{2} \begin{leftcolumn}
+\begin{lstlisting}
+a := 100
+p := &a
+fmt.Printf("Value of a: %d\n", a)
+fmt.Printf("Address: %p, refered value is: %d", p, *p)
+\end{lstlisting}
+\end{leftcolumn} \begin{rightcolumn}
+1. GO don't have a pointers arythmetics. +, - and * operation are not applicable
+for Pointer type.
+2. GO also doesn't have explicitly cast of pointers.
+3. GO keep information about addressed size as part of Type Devinition at
+compilation time.
+
+\end{rightcolumn}
+\end{paracol}
+
+Memory conception.
+\texttt{var pInt *int} -- Declaration of pointer for integer.
+
+i := 42
+p = \&i -- get the poiner of the i
+p       -- use the pointer
+*p      -- use the pointer reverence value;
+\section{Interface}
+
+Type interface (Or Type Alias). More type aliases in
+\href{constraint package}{https://pkg.go.dev/golang.org/x/exp/constraints}
+
+\begin{lstlisting}
+    type MyInt interface {
+        int | uint
+    }
+\end{lstlisting}
+
+\section{Generics}
+\begin{paracol}{2} \begin{leftcolumn}
+Generic function parameters.
+\begin{lstlisting}
+    func addT[T int | float64](a, b T) T {
+
+    }
+\end{lstlisting}
+
+Constraints have a popular type aliases.
+
+\end{leftcolumn}\begin{rightcolumn}
+Generics in GO resolved at compilation time to not effect runtime performance
+\end{rightcolumn}
+\end{paracol}
+
+
+\section{Error handler}
+Part of buildin package in
+
+
+\section{Concurrency}
+
+WaitGroup
+
+go statement
+
+Race Condition problem
+
+Select statement
+
+Mutex
+
+Atomic
+
+
+\section{Modules and packages}
+
+\textbf{Package} is a logical entity and could be splited to many files in one
+directory.
+
+
+Each file could contains a lot of functions and types and other entities.
+
+
+\textbf{AA, Moduel} is logical entity which represent the deliverable code.
+
+
+\textbf{AA, Dependency} is a relationship between code of two and more modules.
+
+\section{Development Infrastructure}
+
+\subsection{Go Compiler}
+
+\tt{> go doc} show the documentation and generate static documentation on local
+machine
+
+\subsection{Unit testing}
+\subsection{Documentation}
+\subsection{Code Convention}
+
+\section{Standart Library}
+
+package json.
+
+\end{document}
