@@ -5,18 +5,32 @@
 \usepackage[a4paper,left=2cm, right=1cm, top=1cm, bottom=2cm]{geometry}         % For setting margins
 
 % Optional packages
- \usepackage[utf8]{inputenc}   % Encoding
+\usepackage[utf8]{inputenc}   % Encoding
 \usepackage[T1]{fontenc}      % Better fonts
 \usepackage{multicol}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage[framemethod=default]{mdframed}
 \usepackage[scaled]{beramono}
+\usepackage{tocloft} % Required for custom Table of Contents formatting
+
+
 
 % Make hyperlinks inside of document and clickable TOC
-\usepackage[hidelinks]{hyperref}
+\usepackage[
+    colorlinks=true,              % Enable colored links
+    linkcolor=black,              % TOC, sections, etc.
+    urlcolor=blue,                % URLs (from \href or \url)
+    pdfborder={0 0 1}             % Underline style
+]{hyperref}
 
-% COLUMNS LAYOUT for notes
+% COLUMNS LAYOUT and STYLES
+\setcounter{secnumdepth}{0}
+\renewcommand{\cftsecnumwidth}{0pt} % Remove section numbers from the TOC
+\setlength{\parindent}{0pt}       % First line indentv
+\setlength{\parskip}{1em}         % Add vertical space between paragraphs
+
+% COLUMNS
 \usepackage{paracol}
 \columnratio{0.7}
 \setlength{\columnseprule}{0.4pt} % Line between columns
@@ -53,12 +67,13 @@
 \lstset{
     language=Go,
     numbers=left,                % Line numbers on the left
-    numberstyle=\tiny\color{gray},
-    numbersep=14pt,
+    numbersep=10pt,
+    numberstyle=\ttfamily\small\color{darkgray},
     basicstyle=\ttfamily\small,
     keywordstyle=\color{blue}\bfseries,
     commentstyle=\color{gray},
     stringstyle=\color{orange},
+    rulecolor=\color{gray},
     showstringspaces=false,
     breaklines=true,
     tabsize=1,
@@ -73,43 +88,64 @@
 \date{\today}
 \maketitle
 
-My notes during basic couse of GO Lang couse. Cover only very basic topics like
-Function, Variables, Intput, Output, Keywords
+My notes during the GOLang basic course. Cover only very basic topics like
+Function, Variables, Input, Output, Keywords
 
 % Table of contents
-\tableofcontents
+\begin{multicols}{2}
+    \tableofcontents
+\end{multicols}
 \newpage
 
 
 \section{Syntax}
 
-\subsection{Keywords}
-\begin{paracol}{2} \begin{leftcolumn}
-\begin{tabular}{lllll}
-break       & default       & func      & interface & \textbf{select} \\
-case        & \textbf{defer} & \textbf{go} & \textbf{map} & struct \\
-\textbf{chan} & else & \textbf{goto}    & package   & switch \\
-const         & \textbf{fallthrough}    & if        & \textbf{range} & \textbf{type} \\
-continue      & for         & import    & return    & var \\
-\end{tabular}
-\end{leftcolumn} \begin{rightcolumn}
-According to \href{https://go.dev/ref/spec}{Go spec} it only 25 keywords to
-write programs. I think it is not true. Standart data types are also reserved
-and as well as some values (i.e., true, false, nil, NaN)
-\end{rightcolumn}
-\end{paracol}
+\begin{multicols}{2}
+    \subsection{Keywords}
+    \fcolorbox{blue!05}{lightgray}{\ttfamily
+        \begin{tabular}{@{\hskip 0pt}llll}
+            if    & const   & break   & interface \\
+            else  & case    & defer   & select\\
+            for   & type    & package & continue\\
+            goto  & chan    & switch  & default \\
+            map   & range   & struct  & fallthrough\\
+            var   & func    & import  & return \\
+            go \\
+        \end{tabular}
+    }
+    \subsection{Identifiers}
+    Reserved function identifiers also called build-in functions that
+    available everywhere without importing
 
-\subsection{Identifiers}
-\begin{tabular}{ll}
-Blank identifier& \_ \\
-Standart types  & any, comparable, error, uintptr and basic types \\
-Constants       & true, false, iota \\
-Values          & nil, NaN? \\
-Functions       & append, cap, close, complex, copy, \\
-                & delete, imag, len, make, new, panic, \\
-                & print, real, recover
+    \fcolorbox{blue!05}{lightgray}{\ttfamily
+    \begin{tabular}{@{\hskip 0pt}lllll}
+            len  & copy & delete & close & complex  \\
+            cap  & imag & append & print  & recover \\
+            new  & make & panic  & real \\
+    \end{tabular}
+    }
 
-\end{tabular}
+    Standard types
+
+    \fcolorbox{blue!05}{lightgray}{\ttfamily
+    \begin{tabular}{@{\hskip 0pt}llll}
+        any & comparable & error & uintptr \\
+        int & uint & \ldots \\
+    \end{tabular}
+    }
+
+    Constants and values
+    \fcolorbox{blue!05}{lightgray}{\ttfamily
+    \begin{tabular}{@{\hskip 0pt}lllll}
+        true & false & iota & nil & NaN? \\
+    \end{tabular}
+    }
+
+    Blank identifier
+    \texttt{_}
+\end{multicols}
+
+
 \subsection{Operators}
 \begin{paracol}{2}
 \begin{leftcolumn}
@@ -117,15 +153,15 @@ Functions       & append, cap, close, complex, copy, \\
 math        & + -       & P2 binary plus and minus \\
             & * /       & P1 binary multiply, divide \\
             & \%        & P1 binary reminder \\
-bitwise     & \& \&\^{} & P1 Binary "and", "not and" \\
-            & | \^{}    & P2 Binary "or", "xor" \\
+bitwise     & \& \&\^{} & P1 Binary ``and'', ``not and'' \\
+            & | \^{}    & P2 Binary ``or'', ``xor'' \\
             & >> <<     & P1 Binary shift left, right \\
-equty       & > >=      & P3 Binary great, great or equal \\
+equity       & > >=      & P3 Binary great, great or equal \\
             & < <=      & P3 Binary less, less or equal \\
             & == !=     & P3 Binary Equal, Not equal \\
-logical     & \&\&      & P4 Binary logical "and" \\
-            & ||        & P5 Binary logical "or" \\
-assign      & = :=      & P6 Assign and assigne and init \\
+logical     & \&\&      & P4 Binary logical ``and'' \\
+            & ||        & P5 Binary logical ``or'' \\
+assign      & = :=      & P6 Assign and assign and init \\
 unary       & ++ --     & unary increment and decrement \\
             & -         & unary negative \\
             & \^{}      & unary bitwise complement \\
@@ -133,27 +169,28 @@ Pointer     & \& *      & unary get reference, dereference\\
 priority    & ( )       & define the priorities in expression \\
 scope       & \{ \}     & define the scope of variables and \\
 punctuation & , ;       & \\
-channels    & <-        & \\
+channels    & <-        & read, write value from chanel\\
 slice       & \ldots    & extend the slice values \\
 accessors   & .         & access of the property of structure \\
-            & [ ]       & access of array,slice or map element \\
+            & [ ]       & access of array/slice/map/string element \\
 other       & : ~       &  \\
 \end{tabular}
 
 \end{leftcolumn} \begin{rightcolumn}
-\begin{enumerate}
-    \item\textbf{plus}, \textbf{minus} and \textbf{multiply} operations return
-        result of the same type as an operands.
-    \item \textbf{devide} operator return float type.
-    \item \textbf{less}, \textbf{great}, \textbf{equal}, \textbf{not eaqual}
-        operations return resul of boolean type.
-    \item Golang doesn't have a ternary operator which available in many languages
-        including
-\end{enumerate}
+\textbf{Plus}, \textbf{minus} and \textbf{multiply} operations return
+result of the same type as an operands.
+
+\textbf{Devide} operator return float type.
+
+\textbf{Less}, \textbf{great}, \textbf{equal}, \textbf{not eaqual}
+operations return result of the boolean type.
+
+Golang doesn't have a ternary operator whitch available in many
+languages including
 \end{rightcolumn}
 \end{paracol}
 
-\subsection{File structure}
+\subsection*{File structure}
 \begin{paracol}{2}
 \begin{leftcolumn}
 \begin{lstlisting}
@@ -169,46 +206,49 @@ func main() {
 \end{lstlisting}
 \end{leftcolumn} \begin{rightcolumn}
 Go file have a \textbf{package} name and could have \textbf{function},
-\textbf{types}, \textbf{variales} or \textbf{constants} declaration.
+\textbf{types}, \textbf{variables} or \textbf{constant} declaration.
 \end{rightcolumn}
 \end{paracol}
 
 \newpage
-\section{Data types and structures}
-GO is a stricly typed programming language.
-\subsection{Basic types}
+\section*{Data types and structures}
+\label{sec:data-types-and-structures}
+GO is a strictly typed programming language.
+
+\subsection*{Basic types}
+\label{subsec:basic-types}
 \begin{paracol}{2}
 \begin{leftcolumn}
 \begin{tabular}{llll}
 \hline
 Kind        & Default Value & Size    & Types       \\
 \hline
-Logical     & \tt{false}& \tt{1b}      & int8, uint8, byte, bool \\
-Integers    & \tt{0}    & \tt{2b}      & int16, uint16 \\
-            & \tt{0}    & \tt{4b}      & int32, uint32, rune\\
-            & \tt{0}    & \tt{8b}      & int64, uint64\\
-Numbers     & \tt{0}    & \tt{4b}      & float32 \\
-            & \tt{0}    & \tt{8b}      & float64,  \\
-            & \tt{0}    & \tt{8b}      & complex64  \\
-            & \tt{0}    & \tt{16b}     & complex128 \\
-Integers    & \tt{0}    & \tt{4b/8b}   & int, uint \\
-Pointer     & \tt{nil}  & \tt{4b/8b}   & *int, *string, etc. \\
-String      & \tt{""}   & \tt{16b+}    & string \\
+Logical     & \texttt{false}& \texttt{1b}      & int8, uint8, byte, bool \\
+Integers    & \texttt{0}    & \texttt{2b}      & int16, uint16 \\
+            & \texttt{0}    & \texttt{4b}      & int32, uint32, rune\\
+            & \texttt{0}    & \texttt{8b}      & int64, uint64\\
+Numbers     & \texttt{0}    & \texttt{4b}      & float32 \\
+            & \texttt{0}    & \texttt{8b}      & float64,  \\
+            & \texttt{0}    & \texttt{8b}      & complex64  \\
+            & \texttt{0}    & \texttt{16b}     & complex128 \\
+Integers    & \texttt{0}    & \texttt{4b/8b}   & int, uint \\
+Pointer     & \texttt{nil}  & \texttt{4b/8b}   & *int, *string, etc. \\
+            & \texttt{0}    & \texttt{4b/8b}   & uintptr \\
+String      & \texttt{""}   & \texttt{16b+}    & string \\
 \hline
 \end{tabular}
 \end{leftcolumn}
 \begin{rightcolumn}
 1. Type casing by using T(value) \\
-2. GO don't have a String interpolation feature. Use \tt{Printf} and \\
-\tt{Sprintf} function from the standard library. \\
-3. The standartd library have flexible abilities to print value of any type with \\
-\%v paramter.
+2. GO don't have a String interpolation feature. Use \texttt{Printf} and \\
+\texttt{Sprintf} function from the standard library. \\
+3. The standard library has flexible abilities to print value of any type with \\
+\%v parameter.
 \end{rightcolumn}
 \end{paracol}
 
 \subsection{Arrays}
-Array is a fixed side set of values of the same type.
-var a [10]int
+Array is a fixed set of values of one data type.
 \begin{lstlisting}
 var a [2]string
 a[0] = "Hello"
@@ -220,9 +260,9 @@ primes := [6]int{2, 3, 5, 7, 11, 13}
 fmt.Println(primes)
 \end{lstlisting}
 
+\subsection{Slices} have a dynamic size and don't store the own value.
+Only represent the value of underlying array.
 
-\subsection{Slices}
-Slices has a dynamic size and don't store the own value. Only represent the value of underlying array.
 \begin{lstlisting}
 primes := [6]int{2, 3, 5, 7, 11, 13}
 
@@ -230,14 +270,15 @@ var s []int = primes[1:4]
 fmt.Println(s)
 \end{lstlisting}
 
-len(s)  -- print length
-cap(s) -- print capacity
-make([]int, 5)
-append(s []T, vs ...T) []T
+\texttt{len(s)} -- print length
+\texttt{cap(s)} -- print capacity
+\texttt{make([]int, 5)} -- create a slice
+\texttt{append(s []T, vs \ldots T) []T}
 
-default value of slice is "nil"
+Default value of slice is ``nil''
 
-\b{Range} -- operator used to extract content of slice to individual values.
+\textbf{Range} -- operator used to extract content of slice to individual values.
+
 \begin{lstlisting}
 var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
 for i, v := range pow {
@@ -255,9 +296,9 @@ var myMap = map[KT]VT{
 var myMap = make()
 \end{lstlisting}
 
-delete
+Delete
 
-ok? statement.
+Ok? Statement.
 
 \subsection{Structures}
 
@@ -271,13 +312,14 @@ v := Vertex{1, 2}
 \end{lstlisting}
 
 \begin{Note} \textbf{Advanced note}
-inner field promotion allow to use structures composition as an iheritance.
+inner field promotion allows to use structures composition as an iheritance.
 \end{Note}
 
 Anonymous struct = inline struct
 
 \newpage
-\section {Code flow}
+\section{Code flow}
+\label{sec:code-flow}
 
 \subsection{Condition}
 \begin{lstlisting}
@@ -286,8 +328,7 @@ if init; condition {
 }
 \end{lstlisting}
 
-if ... else
-
+If else
 \begin{lstlisting}
 if init; condition {
     ...
@@ -322,8 +363,10 @@ switch {
 
 
 \subsection{Loop}
-Go has only one loop which has init section, condition section
-and incremental section. But only condition section is required
+\label{subsec:loop}
+Go has only one loop which has init section, condition section and incremental section.
+But only condition section is required
+
 \begin{lstlisting}
 for init; condition; increment{
     ...
@@ -344,7 +387,7 @@ for {
 }
 \end{lstlisting}
 
-range
+Range
 \begin{lstlisting}
 for key, value := range oldMap {
     newMap[key] = value
@@ -357,8 +400,8 @@ for _, value := range oldMap {
 
 \textbf{Note, Advanced Topic}
 
-GO don't have build-in control flow structure to iterate structure fileds. Use
-`reflect` package for this.
+GO don't have build-in control flow structure to iterate structure fileds.
+Use `reflect` package for this.
 
 \newpage
 \section{Functions}
@@ -370,7 +413,7 @@ func (receiver) name (args) returnType {
 }
 \end{lstlisting}
 
-\textbf{defer} build the function execution stack
+\textbf{Defer} build the function execution stack
 \begin{lstlisting}
 func (args) type {
     defer fmt.Println("world")
@@ -393,8 +436,8 @@ func Greet(names ...string) {
 \end{lstlisting}
 Defer
 
-\textbf{Receiver} is an ability to move function in scope of some structure. This is
-a way to simulate Object-Oriented approach
+\textbf{Receiver} is an ability to move function in the scope of some structure.
+This is a way to simulate Object-Oriented approach
 
 (!) Note, Advanced Topic (!)
 No `default values` for functions parameters
@@ -402,7 +445,7 @@ No `default values` for functions parameters
 
 \newpage
 \section{Pointers}
-\textbf{Pointer} is a variable which save the reference to other variable.
+\textbf{Pointer} is a variable that saves the reference to another variable.
 
 \begin{paracol}{2} \begin{leftcolumn}
 \begin{lstlisting}
@@ -412,7 +455,7 @@ fmt.Printf("Value of a: %d\n", a)
 fmt.Printf("Address: %p, refered value is: %d", p, *p)
 \end{lstlisting}
 \end{leftcolumn} \begin{rightcolumn}
-1. GO don't have a pointers arythmetics. +, - and * operation are not applicable
+1. GO don't have a pointers arithmetics. +, - and * operation are not applicable
 for Pointer type.
 2. GO also doesn't have explicitly cast of pointers.
 3. GO keep information about addressed size as part of Type Devinition at
@@ -422,10 +465,10 @@ compilation time.
 \end{paracol}
 
 Memory conception.
-\texttt{var pInt *int} -- Declaration of pointer for integer.
+\texttt{Var pInt *int} -- Declaration of pointer for integer.
 
-i := 42
-p = \&i -- get the poiner of the i
+I := 42
+p = \&i -- get the pointer of the i
 p       -- use the pointer
 *p      -- use the pointer reverence value;
 \section{Interface}
@@ -457,51 +500,99 @@ Generics in GO resolved at compilation time to not effect runtime performance
 
 
 \section{Error handler}
-Part of buildin package in
+Part of buildin package
 
+Panic / defer
 
-\section{Concurrency}
+Error interface
 
-WaitGroup
+\section{Concurrency and goroutine}
 
-go statement
+\texttt{WaitGroup} -- include cimple synchronisatonn logic.
 
-Race Condition problem
+\texttt{Go} statement -- run function in gourutine
+
+\texttt{Race Condition} -- is an issue when different pars of code race to one data.
+Race Condition lead to data corruption
 
 Select statement
 
-Mutex
+\texttt{Mutex} the solution for accesing cucurrent resources.
 
-Atomic
+\texttt{Atomic} similar to Mutext but works on processor level with simple operations.
 
+Share by communication
+
+\begin{lstlisting}
+c1 := make(chan int) // create unbuffered channel
+c2 := make(chan int, 8) // create buffered channel
+c3 := make(chan <-int)  // create recevier-channel
+c4 := make(<- chan int) // create send-channel
+\end{lstlisting}
+
+\texttt{make(\ldots)} used for creation of slices, maps and chanels.
+
+operators \texttt{<-}send and recevie\texttt{<-} pause the goroutine until receiver-channel will have value to recive.
+And pause the goroutine untile sender will not sure that value received.
+
+Listening of chanel implemented by \textt{range} statement inside of \texttt{for} loop.
+If chanel listened by somebody with range statement it must be closed notify all listeners about end of sendign.
+
+If program have only sender (without recevier) of chanel it will stuck at sending. This is \textt{deadlock} situation.
+The same issue if only receiver is waiting for a value from chanel, but the program doesn't have any sender.
+
+Such program will crashed at Runtine with deadlock fatal error.
+
+\texttt{close()} is build-in method used only to close the chanel.
 
 \section{Modules and packages}
 
-\textbf{Package} is a logical entity and could be splited to many files in one
+\textbf{Package} — is a logical entity and could be split to many files in one
 directory.
+Each directory can have only one (logical) package and name of
+package and name directory could be different.
+
+Each file could contain a lot of functions and types and other entities.
 
 
-Each file could contains a lot of functions and types and other entities.
-
-
-\textbf{AA, Moduel} is logical entity which represent the deliverable code.
-
+\textbf{AA, Module} — is a logical entity that represents the deliverable code.
 
 \textbf{AA, Dependency} is a relationship between code of two and more modules.
 
 \section{Development Infrastructure}
+\label{sec:development-infrastructure}
 
 \subsection{Go Compiler}
 
-\tt{> go doc} show the documentation and generate static documentation on local
-machine
+\texttt{Go doc} show the documentation and generate static documentation on
+local machine
+
+\subsection{Application}
+
+Organization of command line application
+
+Input / output stream
+
+Error stream
+
+Input parameters / exit code
+
+\subsection{Operation System}
+
+File System
+
+Running Applications and Memory management.
 
 \subsection{Unit testing}
 \subsection{Documentation}
+
+\texttt{> godoc -http: :8080} will start local server with all documentation at
+http://localhost:8080 address
+
 \subsection{Code Convention}
 
-\section{Standart Library}
+\section{Standard Library}
 
-package json.
+Package json.
 
 \end{document}

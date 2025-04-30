@@ -8,10 +8,6 @@ import (
 
 var wg sync.WaitGroup
 
-func init() {
-
-}
-
 func main() {
 
 	fmt.Println("OS: ", runtime.GOOS)

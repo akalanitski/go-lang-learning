@@ -14,7 +14,7 @@ func (p Point) Print(name string) {
 	fmt.Printf("Point: %s(%v, %v)\n", name, p.x, p.y)
 }
 
-// This method could receive only pointer to the original value
+// Method can receve only reference to Point
 func (p *Point) Move(d Point) {
 	p.x += d.x
 	p.y += d.y
@@ -45,4 +45,5 @@ func main() {
 	a.Print("A")
 	b.Print("B")
 	c.Print("C")
+
 }

@@ -8,10 +8,6 @@ import (
 
 var wg sync.WaitGroup
 
-func init() {
-
-}
-
 func main() {
 
 	fmt.Printf("OS: %v, ARCH %v, CPU %v, goroutines %v, GOMAXPROCS: %v\n",
