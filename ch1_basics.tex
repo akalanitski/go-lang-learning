@@ -5,14 +5,16 @@
 \usepackage[a4paper,left=2cm, right=1cm, top=1cm, bottom=2cm]{geometry}         % For setting margins
 
 % Optional packages
-\usepackage[utf8]{inputenc}   % Encoding
+\usepackage[utf8]{inputenc}   % Encoding, Allow Unicode input
 \usepackage[T1]{fontenc}      % Better fonts
 \usepackage{multicol}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage[most]{tcolorbox} % loads tikz, xcolor, etc.
 \usepackage[framemethod=default]{mdframed}
 \usepackage[scaled]{beramono}
 \usepackage{tocloft} % Required for custom Table of Contents formatting
+\usepackage{etoolbox}       % For robust patching
 
 
 
@@ -36,8 +38,27 @@
 \setlength{\columnseprule}{0.4pt} % Line between columns
 \setlength{\columnsep}{1em}       % Space between columns
 
+\tcbset{
+    codewordstyle/.style={
+        boxrule=0pt,
+        colback=gray!20,
+        colframe=gray!20,
+        boxsep=1pt,
+        arc=2pt,
+        sharp corners=southwest,  % You can change this
+        height=2.5ex,
+        valign=center,
+        left=2pt, right=2pt,
+        enhanced,
+    }
+}
+
+
+% Define the command
+\newtcbox{\codeword}{codewordstyle, on line, fontupper=\ttfamily\footnotesize}
+
 \newmdenv[
-    linecolor=gray,
+    linecolor=gray!0.5,
     linewidth=1pt,
     roundcorner=5pt,
     backgroundcolor=gray!10,
@@ -67,7 +88,7 @@
 \lstset{
     language=Go,
     numbers=left,                % Line numbers on the left
-    numbersep=10pt,
+    numbersep=-8pt,
     numberstyle=\ttfamily\small\color{darkgray},
     basicstyle=\ttfamily\small,
     keywordstyle=\color{blue}\bfseries,
@@ -88,8 +109,8 @@
 \date{\today}
 \maketitle
 
-My notes during the GOLang basic course. Cover only very basic topics like
-Function, Variables, Input, Output, Keywords
+My notes during the GOLang basic course.
+Cover only very basic topics like Function, Variables, Input, Output, Keywords
 
 % Table of contents
 \begin{multicols}{2}
@@ -99,8 +120,25 @@ Function, Variables, Input, Output, Keywords
 
 
 \section{Syntax}
+\label{sec:syntax}
 
 \begin{multicols}{2}
+    \subsection{File structure}
+    \begin{lstlisting}
+    package main
+
+    import "fmt"
+
+    // "main" function is a reserved as an entry poin into
+    /// the app and must be in "main" pacakge
+    func main() {
+        fmt.Println("Hello world!")
+    }
+    \end{lstlisting}
+
+    Go file have a \textbf{package} name and could have \textbf{function},
+    \textbf{types}, \textbf{variables} or \textbf{constant} declaration.
+
     \subsection{Keywords}
     \fcolorbox{blue!05}{lightgray}{\ttfamily
         \begin{tabular}{@{\hskip 0pt}llll}
@@ -119,9 +157,9 @@ Function, Variables, Input, Output, Keywords
 
     \fcolorbox{blue!05}{lightgray}{\ttfamily
     \begin{tabular}{@{\hskip 0pt}lllll}
-            len  & copy & delete & close & complex  \\
-            cap  & imag & append & print  & recover \\
-            new  & make & panic  & real \\
+        len  & copy & delete & close & complex  \\
+        cap  & imag & append & print  & recover \\
+        new  & make & panic  & real \\
     \end{tabular}
     }
 
@@ -135,6 +173,7 @@ Function, Variables, Input, Output, Keywords
     }
 
     Constants and values
+
     \fcolorbox{blue!05}{lightgray}{\ttfamily
     \begin{tabular}{@{\hskip 0pt}lllll}
         true & false & iota & nil & NaN? \\
@@ -142,266 +181,247 @@ Function, Variables, Input, Output, Keywords
     }
 
     Blank identifier
-    \texttt{_}
-\end{multicols}
 
+%     \codeword{\_} blank identifier is used to mark the value which will not used in the app
 
 \subsection{Operators}
-\begin{paracol}{2}
-\begin{leftcolumn}
-\begin{tabular}{lll}
-math        & + -       & P2 binary plus and minus \\
-            & * /       & P1 binary multiply, divide \\
-            & \%        & P1 binary reminder \\
-bitwise     & \& \&\^{} & P1 Binary ``and'', ``not and'' \\
-            & | \^{}    & P2 Binary ``or'', ``xor'' \\
-            & >> <<     & P1 Binary shift left, right \\
-equity       & > >=      & P3 Binary great, great or equal \\
-            & < <=      & P3 Binary less, less or equal \\
-            & == !=     & P3 Binary Equal, Not equal \\
-logical     & \&\&      & P4 Binary logical ``and'' \\
-            & ||        & P5 Binary logical ``or'' \\
-assign      & = :=      & P6 Assign and assign and init \\
-unary       & ++ --     & unary increment and decrement \\
-            & -         & unary negative \\
-            & \^{}      & unary bitwise complement \\
-Pointer     & \& *      & unary get reference, dereference\\
-priority    & ( )       & define the priorities in expression \\
-scope       & \{ \}     & define the scope of variables and \\
-punctuation & , ;       & \\
-channels    & <-        & read, write value from chanel\\
-slice       & \ldots    & extend the slice values \\
-accessors   & .         & access of the property of structure \\
-            & [ ]       & access of array/slice/map/string element \\
-other       & : ~       &  \\
-\end{tabular}
+    \begin{tabular}{ll}
+    math \\
+    \codeword{+}  \codeword{-}              & P2 binary plus and minus \\
+    \codeword{*} \codeword{/} \codeword{\%} & P1 binary multiply, divide, reminder \\
+    bitwise \\
+    %     & \codeword{\& \&\^}      & P1 Binary ``and'', ``not and'' \\
+    %            & \codeword{| \^}       & P2 Binary ``or'', ``xor'' \\
+    \codeword{\char62\char62} \codeword{\texttt{<<}}     & P1 Binary shift left, right \\
+    equity
+    \codeword{> >=}      & P3 Binary great, great or equal \\
+    \codeword{< <=}      & P3 Binary less, less or equal \\
+    \codeword{== !=}     & P3 Binary Equal, Not equal \\
+    logical \\
+    \codeword{\&\&}        & P4 Binary logical ``and'' \\
+    \codeword{||}        & P5 Binary logical ``or'' \\
+    assign  \\
+    \codeword{= :=}      & P6 Assign and assign and init \\
+    unary \\
+    \codeword{++ $--$}     & unary increment and decrement \\
+    \codeword{$-$}         & unary negative \\
+    %            & \codeword{\^}         & unary bitwise complement \\
+    Pointer \\
+    \codeword{\& *}       & unary get reference, dereference\\
+    priority  \\
+    \codeword{( )}       & define the priorities in expression \\
+    scope \\
+    \codeword{\{ \}}       & define the scope of variables and \\
+    channels \\
+    \codeword{<-}        & send / receive value from chanel\\
+    slice \\
+    \codeword{\ldots}    & extend the slice values \\
+    accessors  \\
+    \codeword{.     }    & access of the property of structure \\
+    \codeword{[ ]   }    & access of array/slice/map/string element \\
+    other \\
+    \codeword{: ~}       &  \\
+    \end{tabular}
 
-\end{leftcolumn} \begin{rightcolumn}
-\textbf{Plus}, \textbf{minus} and \textbf{multiply} operations return
-result of the same type as an operands.
+    \textbf{Plus}, \textbf{minus} and \textbf{multiply} operations return
+    result of the same type as an operands.
 
-\textbf{Devide} operator return float type.
+    \textbf{Devide} operator return float type.
 
-\textbf{Less}, \textbf{great}, \textbf{equal}, \textbf{not eaqual}
-operations return result of the boolean type.
+    \textbf{Less}, \textbf{great}, \textbf{equal}, \textbf{not eaqual} operations return result of the boolean type.
 
-Golang doesn't have a ternary operator whitch available in many
-languages including
-\end{rightcolumn}
-\end{paracol}
+    Golang doesn't have a ternary operator whitch available in many languages includin
 
-\subsection*{File structure}
-\begin{paracol}{2}
-\begin{leftcolumn}
-\begin{lstlisting}
-package main
-
-import "fmt"
-
-// "main" function is a reserved as an entry poin into
-/// the app and must be in "main" pacakge
-func main() {
-    fmt.Println("Hello world!")
-}
-\end{lstlisting}
-\end{leftcolumn} \begin{rightcolumn}
-Go file have a \textbf{package} name and could have \textbf{function},
-\textbf{types}, \textbf{variables} or \textbf{constant} declaration.
-\end{rightcolumn}
-\end{paracol}
+\end{multicols}
 
 \newpage
-\section*{Data types and structures}
+\section{Data types and structures}
 \label{sec:data-types-and-structures}
-GO is a strictly typed programming language.
+\begin{multicols}{2}
+    GO is a strictly typed programming language.
 
-\subsection*{Basic types}
-\label{subsec:basic-types}
-\begin{paracol}{2}
-\begin{leftcolumn}
-\begin{tabular}{llll}
-\hline
-Kind        & Default Value & Size    & Types       \\
-\hline
-Logical     & \texttt{false}& \texttt{1b}      & int8, uint8, byte, bool \\
-Integers    & \texttt{0}    & \texttt{2b}      & int16, uint16 \\
-            & \texttt{0}    & \texttt{4b}      & int32, uint32, rune\\
-            & \texttt{0}    & \texttt{8b}      & int64, uint64\\
-Numbers     & \texttt{0}    & \texttt{4b}      & float32 \\
-            & \texttt{0}    & \texttt{8b}      & float64,  \\
-            & \texttt{0}    & \texttt{8b}      & complex64  \\
-            & \texttt{0}    & \texttt{16b}     & complex128 \\
-Integers    & \texttt{0}    & \texttt{4b/8b}   & int, uint \\
-Pointer     & \texttt{nil}  & \texttt{4b/8b}   & *int, *string, etc. \\
-            & \texttt{0}    & \texttt{4b/8b}   & uintptr \\
-String      & \texttt{""}   & \texttt{16b+}    & string \\
-\hline
-\end{tabular}
-\end{leftcolumn}
-\begin{rightcolumn}
-1. Type casing by using T(value) \\
-2. GO don't have a String interpolation feature. Use \texttt{Printf} and \\
-\texttt{Sprintf} function from the standard library. \\
-3. The standard library has flexible abilities to print value of any type with \\
-\%v parameter.
-\end{rightcolumn}
-\end{paracol}
+    \subsection{Basic types}
+    \label{subsec:basic-types}
+    \begin{tabular}{lrrl}
+    Kind        & Value         & Size             & Types       \\
+    Logical     & \texttt{false}& \texttt{1b}      & bool \\
+    Integers    & \texttt{0}    & \texttt{1b}      & int8, uint8, byte, bool \\
+                & \texttt{0}    & \texttt{2b}      & int16, uint16 \\
+                & \texttt{0}    & \texttt{4b}      & int32, uint32, rune\\
+                & \texttt{0}    & \texttt{8b}      & int64, uint64\\
+    Numbers     & \texttt{0}    & \texttt{4b}      & float32 \\
+                & \texttt{0}    & \texttt{8b}      & float64,  \\
+                & \texttt{0}    & \texttt{8b}      & complex64  \\
+                & \texttt{0}    & \texttt{16b}     & complex128 \\
+    Integers    & \texttt{0}    & \texttt{4b/8b}   & int, uint \\
+    Pointer     & \texttt{nil}  & \texttt{4b/8b}   & *int, *string, etc. \\
+                & \texttt{0}    & \texttt{4b/8b}   & uintptr \\
+    String      & \texttt{""}   & \texttt{16b+}    & string \\
+    \end{tabular}
+    1. Type casing by using T(value) \\
+    2. GO don't have a String interpolation feature. Use \texttt{Printf} and \\
+    \texttt{Sprintf} function from the standard library. \\
+    3. The standard library has flexible abilities to print value of any type with \\
+    \%v parameter.
 
-\subsection{Arrays}
-Array is a fixed set of values of one data type.
-\begin{lstlisting}
-var a [2]string
-a[0] = "Hello"
-a[1] = "World"
-fmt.Println(a[0], a[1])
-fmt.Println(a)
+    \subsection{Arrays} is a fixed set of values of one data type.
+    \begin{lstlisting}
+    var a [2]string
+    a[0] = "Hello"
+    a[1] = "World"
+    fmt.Println(a[0], a[1])
+    fmt.Println(a)
 
-primes := [6]int{2, 3, 5, 7, 11, 13}
-fmt.Println(primes)
-\end{lstlisting}
+    primes := [6]int{2, 3, 5, 7, 11, 13}
+    fmt.Println(primes)
+    \end{lstlisting}
 
-\subsection{Slices} have a dynamic size and don't store the own value.
-Only represent the value of underlying array.
+    \subsection{Slices} have a dynamic size and don't store the own value.
+    Only represent the value of underlying array.
 
-\begin{lstlisting}
-primes := [6]int{2, 3, 5, 7, 11, 13}
+    \begin{lstlisting}
+    primes := [6]int{2, 3, 5, 7, 11, 13}
 
-var s []int = primes[1:4]
-fmt.Println(s)
-\end{lstlisting}
+    var s []int = primes[1:4]
+    fmt.Println(s)
+    \end{lstlisting}
 
-\texttt{len(s)} -- print length
-\texttt{cap(s)} -- print capacity
-\texttt{make([]int, 5)} -- create a slice
-\texttt{append(s []T, vs \ldots T) []T}
+    \texttt{len(s)} -- print length
+    \texttt{cap(s)} -- print capacity
+    \texttt{make([]int, 5)} -- create a slice
+    \texttt{append(s []T, vs \ldots T) []T}
 
-Default value of slice is ``nil''
+    Default value of slice is ``nil''
 
-\textbf{Range} -- operator used to extract content of slice to individual values.
+    \textbf{Range} -- operator used to extract content of slice to individual values.
 
-\begin{lstlisting}
-var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
-for i, v := range pow {
-    fmt.Printf("2**%d = %d\n", i, v)
-}
-\end{lstlisting}
+    \begin{lstlisting}
+    var pow = []int{1, 2, 4, 8, 16, 32, 64, 128}
+    for i, v := range pow {
+        fmt.Printf("2**%d = %d\n", i, v)
+    }
+    \end{lstlisting}
 
-\subsection[maps]{Maps}
-KAY-VALUE data structure with any type of key and any type of value.
-\begin{lstlisting}
-var myMap = map[KT]VT{
-    key: value
-}
-... or ...
-var myMap = make()
-\end{lstlisting}
+    \subsection{Maps} is key-value data structure with any type of key and any type of value.
+    \begin{lstlisting}
+    var myMap = map[KT]VT{
+        key: value
+    }
+    ... or ...
+    var myMap = make()
+    \end{lstlisting}
 
-Delete
+    Delete
 
-Ok? Statement.
+    Ok? Statement.
 
-\subsection{Structures}
+    \subsection{Structures}
 
-\begin{lstlisting}
-type Vertex struct {
-    X int
-    Y int
-}
-...
-v := Vertex{1, 2}
-\end{lstlisting}
+    \begin{lstlisting}
+    type Vertex struct {
+        X int
+        Y int
+    }
+    ...
+    v := Vertex{1, 2}
+    \end{lstlisting}
 
-\begin{Note} \textbf{Advanced note}
-inner field promotion allows to use structures composition as an iheritance.
-\end{Note}
+    \begin{Note}
+        \textbf{Advanced note} inner field promotion allows to use structures composition as an iheritance.
+    \end{Note}
 
-Anonymous struct = inline struct
+    Anonymous struct = inline struct
+\end{multicols}
 
 \newpage
 \section{Code flow}
 \label{sec:code-flow}
 
-\subsection{Condition}
-\begin{lstlisting}
-if init; condition {
-    ...
-}
-\end{lstlisting}
-
-If else
-\begin{lstlisting}
-if init; condition {
-    ...
-} else {
-    ...
-}
-\end{lstlisting}
-
-Multiple select
-\begin{lstlisting}
-switch init; variable {
-    case val1:
+\begin{multicols}{2}
+    \subsection{Condition}
+    \begin{lstlisting}
+    if init; condition {
         ...
-    case val2:
+    }
+    \end{lstlisting}
+
+    If else
+    \begin{lstlisting}
+    if init; condition {
         ...
-    default:
+    } else {
         ...
-}
-\end{lstlisting}
+    }
+    \end{lstlisting}
 
-\begin{lstlisting}
-switch {
-    case condition1:
+    Multiple select
+    \begin{lstlisting}
+    switch init; variable {
+        case val1:
+            ...
+        case val2:
+            ...
+        default:
+            ...
+    }
+    \end{lstlisting}
+
+    \begin{lstlisting}
+    switch {
+        case condition1:
+            ...
+        case condition2:
+            ...
+        default:
+            ...
+    }
+    \end{lstlisting}
+
+
+
+    \subsection{Loop}
+    \label{subsec:loop}
+    Go has only one loop which has init section, condition section and incremental section.
+    But only condition section is required
+
+    \begin{lstlisting}
+    for init; condition; increment{
         ...
-    case condition2:
+    }
+    \end{lstlisting}
+
+    Sample without init statement.
+    \begin{lstlisting}
+    for sum < 1000 {
+        sum += sum
+    }
+    \end{lstlisting}
+
+    Or forever loop:
+    \begin{lstlisting}
+    for {
         ...
-    default:
-        ...
-}
-\end{lstlisting}
+    }
+    \end{lstlisting}
 
+    Range
+    \begin{lstlisting}
+    for key, value := range oldMap {
+        newMap[key] = value
+    }
+    ... or ...
+    for _, value := range oldMap {
+        fmt.Println(value)
+    }
+    \end{lstlisting}
 
+    \begin{Note}
+    \textbf{Note, Advanced Topic}
 
-\subsection{Loop}
-\label{subsec:loop}
-Go has only one loop which has init section, condition section and incremental section.
-But only condition section is required
-
-\begin{lstlisting}
-for init; condition; increment{
-    ...
-}
-\end{lstlisting}
-
-Sample without init statement.
-\begin{lstlisting}
-for sum < 1000 {
-    sum += sum
-}
-\end{lstlisting}
-
-Or forever loop:
-\begin{lstlisting}
-for {
-    ...
-}
-\end{lstlisting}
-
-Range
-\begin{lstlisting}
-for key, value := range oldMap {
-    newMap[key] = value
-}
-... or ...
-for _, value := range oldMap {
-    fmt.Println(value)
-}
-\end{lstlisting}
-
-\textbf{Note, Advanced Topic}
-
-GO don't have build-in control flow structure to iterate structure fileds.
-Use `reflect` package for this.
+    GO don't have build-in control flow structure to iterate structure fileds.
+    Use `reflect` package for this.
+    \end{Note}
+\end{multicols}
 
 \newpage
 \section{Functions}
@@ -535,10 +555,10 @@ c4 := make(<- chan int) // create send-channel
 operators \texttt{<-}send and recevie\texttt{<-} pause the goroutine until receiver-channel will have value to recive.
 And pause the goroutine untile sender will not sure that value received.
 
-Listening of chanel implemented by \textt{range} statement inside of \texttt{for} loop.
+Listening of chanel implemented by \texttt{range} statement inside of \texttt{for} loop.
 If chanel listened by somebody with range statement it must be closed notify all listeners about end of sendign.
 
-If program have only sender (without recevier) of chanel it will stuck at sending. This is \textt{deadlock} situation.
+If program have only sender (without recevier) of chanel it will stuck at sending. This is \texttt{deadlock} situation.
 The same issue if only receiver is waiting for a value from chanel, but the program doesn't have any sender.
 
 Such program will crashed at Runtine with deadlock fatal error.

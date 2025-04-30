@@ -8,7 +8,7 @@ create a func with the identifier bar that
   - takes in a parameter of type []int
   - returns the sum of all values of type int passed in+
 */
-package ex62_func_interface_test
+package main
 
 import (
 	"fmt"
